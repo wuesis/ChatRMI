@@ -7,8 +7,9 @@ public class GUI extends JFrame {
 
     public GUI(int port, String nickName, String ipAddress) {
         super("ClienteRMI");
-        setSize(500,300);
-        setVisible(true);setResizable(false);
+        setSize(500, 300);
+        setVisible(true);
+        setResizable(false);
 
         setLayout(new BorderLayout());
 
@@ -24,12 +25,6 @@ public class GUI extends JFrame {
         scrollPaneIzquierdo.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         splitPane.setTopComponent(scrollPaneIzquierdo);
 
-        // Añadir JLabels con secuencia de números al panel izquierdo
-        for (int i = 1; i <= 20; i++) {
-            JLabel label = new JLabel("Número " + i);
-            panelIzquierdo.add(label);
-        }
-
         // Panel derecho
         JPanel panelDerecho = new JPanel();
         panelDerecho.setBackground(Color.BLUE);
@@ -38,12 +33,6 @@ public class GUI extends JFrame {
         JScrollPane scrollPaneDerecho = new JScrollPane(panelDerecho);
         scrollPaneDerecho.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         splitPane.setBottomComponent(scrollPaneDerecho);
-
-        // Añadir JLabels con secuencia de números al panel derecho
-        for (int i = 21; i <= 40; i++) {
-            JLabel label = new JLabel("Número " + i);
-            panelDerecho.add(label);
-        }
 
         // Panel inferior
         JPanel panelInferior = new JPanel();
@@ -56,6 +45,16 @@ public class GUI extends JFrame {
         panelInferior.add(textField, BorderLayout.CENTER);
 
 
-
+        textField.addActionListener((actionEvent) -> {
+            if (textField.getText() != ""){
+                JLabel label = new JLabel(textField.getText());
+                panelDerecho.add(label);
+                textField.setText("");
+                revalidate();
+                repaint();
+            }
+        });
     }
+
+
 }
