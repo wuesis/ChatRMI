@@ -120,11 +120,11 @@ public class GUI extends JFrame {
 
 
                 try {
-//                    Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
-//                    IComunication rmi = (IComunication) registry.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
+                    Registry registry = LocateRegistry.getRegistry("192.168.1.241", 1099);
+                    IComunication server = (IComunication) registry.lookup("ChatServer");
 
                     IComunication rmi = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
-                    new ClientEntity(rmi);
+                    new ClientEntity(server);
                     rmi.sentMessage(new MessageInformation(nickName, serverIP, textField.getText()));
 
                 } catch (NotBoundException e) {
