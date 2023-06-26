@@ -3,7 +3,7 @@ package RMIClient;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 
-public class RMIClient {
+public class ClientHub {
 
     public static void main(String[] args) {
         Runnable initialFrame = new Runnable() {

@@ -10,13 +10,16 @@ import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public class GUI extends JFrame implements IClientRemote {
+public class GUI extends JFrame {
 
     private int serverPort = 0;
     private String serverIP = "", nickName = "";
 
-    JPanel panelIzquierdo, panelDerecho;
+    private static JPanel panelIzquierdo, panelDerecho;
+
     public GUI() {
         super("ClienteRMI");
         setPreferredSize(new Dimension(400, 300));
@@ -117,14 +120,18 @@ public class GUI extends JFrame implements IClientRemote {
 
 
                 try {
-                    IComunication mir = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
-                    MessageInformation messageInformation = new MessageInformation(nickName,serverIP,textField.getText());
-                    mir.sentMessage(messageInformation);
+//                    Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
+//                    IComunication rmi = (IComunication) registry.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
+
+                    IComunication rmi = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
+                    new ClientEntity(rmi);
+                    rmi.sentMessage(new MessageInformation(nickName, serverIP, textField.getText()));
+
                 } catch (NotBoundException e) {
                     throw new RuntimeException(e);
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
                 } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
                 }
 
@@ -137,10 +144,15 @@ public class GUI extends JFrame implements IClientRemote {
         });
     }
 
-    @Override
-    public void receiveMessage(String message) throws RemoteException {
-        JLabel label = new JLabel(nickName + ": " + message);
-        revalidate();
-        repaint();
+    public static void addLog(MessageInformation messageInformation) {
+        JLabel label = new JLabel(messageInformation.userNickName + " - " + messageInformation.messageDate + ": " + messageInformation.message);
+        panelDerecho.add(label);
     }
+//
+//    @Override
+//    public void receiveMessage(String message) throws RemoteException {
+//        JLabel label = new JLabel(nickName + ": " + message);
+//        revalidate();
+//        repaint();
+//    }
 }

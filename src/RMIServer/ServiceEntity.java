@@ -12,14 +12,13 @@ public class ServiceEntity extends UnicastRemoteObject implements IComunication{
     ArrayList<IClientRemote> Usuarios;
     protected ServiceEntity() throws RemoteException {
         Usuarios = new  ArrayList<IClientRemote>();
-
     }
 
     @Override
     public void sentMessage(MessageInformation messageInformation) throws RemoteException {
         GUI.addLog(messageInformation);
         for (IClientRemote client : Usuarios) {
-            client.receiveMessage(messageInformation.message);
+            client.receiveMessage(messageInformation);
         }
     }
 
