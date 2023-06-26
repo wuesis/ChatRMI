@@ -8,11 +8,9 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class ClientEntity extends UnicastRemoteObject implements IClientRemote {
 
-    IComunication  server;
 
-    protected ClientEntity(IComunication rmi) throws RemoteException {
-        this.server = rmi;
-        server.regist(this);
+    protected ClientEntity() throws RemoteException {
+
     }
 
     @Override

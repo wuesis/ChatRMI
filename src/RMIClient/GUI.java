@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -67,6 +68,13 @@ public class GUI extends JFrame {
                     serverPort = Integer.parseInt(serverPortField.getText());
                     serverIP = serverIPField.getText();
                     nickName = nickNameField.getText();
+                    try {
+                        Naming.rebind("//" + serverIP + ":" + serverPort + "//RMIServer",new  ClientEntity());
+                    } catch (RemoteException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (MalformedURLException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     setChatLayout();
                 } else {
                     JOptionPane.showMessageDialog(null, "¡Rellena todos los campos!", "Alerta", JOptionPane.WARNING_MESSAGE);
@@ -120,11 +128,10 @@ public class GUI extends JFrame {
 
 
                 try {
-                    Registry registry = LocateRegistry.getRegistry("192.168.1.241", 1099);
-                    IComunication server = (IComunication) registry.lookup("ChatServer");
+//                    Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+//                    IComunication server = (IComunication) registry.lookup("ChatServer");
 
                     IComunication rmi = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
-                    new ClientEntity(server);
                     rmi.sentMessage(new MessageInformation(nickName, serverIP, textField.getText()));
 
                 } catch (NotBoundException e) {
