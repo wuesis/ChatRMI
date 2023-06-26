@@ -30,7 +30,10 @@ public class GUI extends JFrame implements Runnable {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        JLabel Configuracion = new JLabel("Formulario");
+        Thread thread = new Thread(this::run);
+        thread.start();
+
+       //Componentes
         JTextField serverIPField = new JTextField(20);
         JTextField serverPortField = new JTextField(20);
         JTextField nickNameField = new JTextField(20);
@@ -38,6 +41,10 @@ public class GUI extends JFrame implements Runnable {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
+        //Parte superior
+        JLabel Configuracion = new JLabel("Formulario");
+
+        //Parte Central
         JPanel formPanel = new JPanel(new GridLayout(6, 1));
         formPanel.add(new JLabel("Ip del servidor:"));
         formPanel.add(serverIPField);
@@ -46,14 +53,16 @@ public class GUI extends JFrame implements Runnable {
         formPanel.add(new JLabel("Nickname:"));
         formPanel.add(nickNameField);
 
+        //Parte inferior
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(Entrar);
 
         mainPanel.add(Configuracion, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
         add(mainPanel);
+
+        //Evento para iniciar el chat
         Entrar.addActionListener(e -> {
             if (!serverIPField.getText().equals("") && !serverPortField.getText().equals("") && !nickNameField.getText().equals("")) {
                 serverPort = Integer.parseInt(serverPortField.getText());
@@ -66,16 +75,15 @@ public class GUI extends JFrame implements Runnable {
 
         });
 
-        Thread thread = new Thread(this::run);
-        thread.start();
-
         pack();
     }
 
     public void setChatLayout() {
         this.getContentPane().removeAll();
         setSize(1000, 500);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+
         //Split panel
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setDividerLocation(500);
@@ -118,6 +126,7 @@ public class GUI extends JFrame implements Runnable {
             throw new RuntimeException(e);
         }
 
+        //Evento para mandar mensajes!
         textField.addActionListener((actionEvent) -> {
             if (textField.getText() != "") {
                 try {
