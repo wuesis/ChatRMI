@@ -6,10 +6,10 @@ import java.lang.reflect.InvocationTargetException;
 public class RMIClient {
 
     public static void main(String[] args) {
-        Runnable initialFrame= new Runnable() {
+        Runnable initialFrame = new Runnable() {
             @Override
             public void run() {
-                new GUI(1,"eqwfew","wef");
+                new GUI();
             }
         };
 

@@ -10,7 +10,7 @@ public class ServiceHub {
         Runnable initialFrame = new Runnable() {
             @Override
             public void run() {
-                new GUI(Integer.parseInt(args[0]));
+                new GUI();
             }
         };
 
