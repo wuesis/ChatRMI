@@ -1,6 +1,6 @@
 package RMIClient;
 
-import Models.messageInformation;
+import Models.MessageInformation;
 import RMIServer.IComunication;
 
 import javax.swing.*;
@@ -118,7 +118,8 @@ public class GUI extends JFrame implements IClientRemote {
 
                 try {
                     IComunication mir = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
-                    mir.sentMessage(new messageInformation(nickName,serverIP,textField.getText()));
+                    MessageInformation messageInformation = new MessageInformation(nickName,serverIP,textField.getText());
+                    mir.sentMessage(messageInformation);
                 } catch (NotBoundException e) {
                     throw new RuntimeException(e);
                 } catch (MalformedURLException e) {
@@ -139,7 +140,6 @@ public class GUI extends JFrame implements IClientRemote {
     @Override
     public void receiveMessage(String message) throws RemoteException {
         JLabel label = new JLabel(nickName + ": " + message);
-        panelDerecho.add(label);
         revalidate();
         repaint();
     }

@@ -1,15 +1,13 @@
 package Models;
 
-import sun.util.calendar.BaseCalendar;
-
-import java.sql.Date;
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class messageInformation {
+public class MessageInformation implements Serializable {
 
     public String userNickName, message, ipAddress, messageDate;
 
-    public messageInformation(String userNickName, String ipAddress, String message){
+    public MessageInformation(String userNickName, String ipAddress, String message){
         this.userNickName = userNickName;
         this.ipAddress = ipAddress;
         this.message = message;

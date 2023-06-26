@@ -1,6 +1,6 @@
 package RMIServer;
 
-import Models.messageInformation;
+import Models.MessageInformation;
 import RMIClient.IClientRemote;
 
 import java.rmi.RemoteException;
@@ -12,10 +12,11 @@ public class ServiceEntity extends UnicastRemoteObject implements IComunication{
     ArrayList<IClientRemote> Usuarios;
     protected ServiceEntity() throws RemoteException {
         Usuarios = new  ArrayList<IClientRemote>();
+
     }
 
     @Override
-    public void sentMessage(messageInformation messageInformation) throws RemoteException {
+    public void sentMessage(MessageInformation messageInformation) throws RemoteException {
         GUI.addLog(messageInformation);
         for (IClientRemote client : Usuarios) {
             client.receiveMessage(messageInformation.message);

@@ -1,6 +1,6 @@
 package RMIServer;
 
-import Models.messageInformation;
+import Models.MessageInformation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +69,7 @@ public class GUI extends JFrame implements Runnable {
         pack();
     }
 
-    public static void addLog(messageInformation messageInformation) {
+    public static void addLog(MessageInformation messageInformation) {
         JLabel label = new JLabel(messageInformation.userNickName + " - " + messageInformation.messageDate + ": " + messageInformation.message);
         panelIzquierdo.add(label);
     }
