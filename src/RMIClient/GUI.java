@@ -14,12 +14,14 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class GUI extends JFrame {
+public class GUI extends JFrame implements Runnable {
 
     private int serverPort = 0;
     private String serverIP = "", nickName = "";
 
     private static JPanel panelIzquierdo, panelDerecho;
+
+    IComunication rmi;
 
     public GUI() {
         super("ClienteRMI");
@@ -28,17 +30,14 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        // Crear componentes
         JLabel Configuracion = new JLabel("Formulario");
         JTextField serverIPField = new JTextField(20);
         JTextField serverPortField = new JTextField(20);
         JTextField nickNameField = new JTextField(20);
         JButton Entrar = new JButton("Enviar");
 
-        // Crear contenedor principal
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        // Crear panel para las parejas de campos de texto
         JPanel formPanel = new JPanel(new GridLayout(6, 1));
         formPanel.add(new JLabel("Ip del servidor:"));
         formPanel.add(serverIPField);
@@ -47,43 +46,29 @@ public class GUI extends JFrame {
         formPanel.add(new JLabel("Nickname:"));
         formPanel.add(nickNameField);
 
-
-        // Crear panel para el botón
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(Entrar);
 
-        // Agregar componentes al contenedor principal
         mainPanel.add(Configuracion, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Agregar contenedor principal al JFrame
         add(mainPanel);
-
-        // Agregar evento onClick al botón
-        Entrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!serverIPField.getText().equals("") && !serverPortField.getText().equals("") && !nickNameField.getText().equals("")) {
-                    serverPort = Integer.parseInt(serverPortField.getText());
-                    serverIP = serverIPField.getText();
-                    nickName = nickNameField.getText();
-                    try {
-                        Naming.rebind("//" + serverIP + ":" + serverPort + "//RMIServer",new  ClientEntity());
-                    } catch (RemoteException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (MalformedURLException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    setChatLayout();
-                } else {
-                    JOptionPane.showMessageDialog(null, "¡Rellena todos los campos!", "Alerta", JOptionPane.WARNING_MESSAGE);
-                }
-
+        Entrar.addActionListener(e -> {
+            if (!serverIPField.getText().equals("") && !serverPortField.getText().equals("") && !nickNameField.getText().equals("")) {
+                serverPort = Integer.parseInt(serverPortField.getText());
+                serverIP = serverIPField.getText();
+                nickName = nickNameField.getText();
+                setChatLayout();
+            } else {
+                JOptionPane.showMessageDialog(null, "¡Rellena todos los campos!", "Alerta", JOptionPane.WARNING_MESSAGE);
             }
+
         });
 
-        // Mostrar la ventana
+        Thread thread = new Thread(this::run);
+        thread.start();
+
         pack();
     }
 
@@ -122,31 +107,25 @@ public class GUI extends JFrame {
         JTextField textField = new JTextField();
         panelInferior.add(textField, BorderLayout.CENTER);
 
+        try {
+            rmi = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
+            new ClientEntity(rmi);
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
 
         textField.addActionListener((actionEvent) -> {
             if (textField.getText() != "") {
-
-
                 try {
-//                    Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-//                    IComunication server = (IComunication) registry.lookup("ChatServer");
-
-                    IComunication rmi = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
                     rmi.sentMessage(new MessageInformation(nickName, serverIP, textField.getText()));
-
-                } catch (NotBoundException e) {
-                    throw new RuntimeException(e);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
                 }
-
-                JLabel label = new JLabel(nickName + ": " + textField.getText());
-                panelDerecho.add(label);
                 textField.setText("");
-                revalidate();
-                repaint();
             }
         });
     }
@@ -155,11 +134,17 @@ public class GUI extends JFrame {
         JLabel label = new JLabel(messageInformation.userNickName + " - " + messageInformation.messageDate + ": " + messageInformation.message);
         panelDerecho.add(label);
     }
-//
-//    @Override
-//    public void receiveMessage(String message) throws RemoteException {
-//        JLabel label = new JLabel(nickName + ": " + message);
-//        revalidate();
-//        repaint();
-//    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(100);
+                revalidate();
+                repaint();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
