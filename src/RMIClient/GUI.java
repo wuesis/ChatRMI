@@ -1,5 +1,6 @@
 package RMIClient;
 
+import Models.messageInformation;
 import RMIServer.IComunication;
 
 import javax.swing.*;
@@ -10,11 +11,12 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-public class GUI extends JFrame {
+public class GUI extends JFrame implements IClientRemote {
 
     private int serverPort = 0;
     private String serverIP = "", nickName = "";
 
+    JPanel panelIzquierdo, panelDerecho;
     public GUI() {
         super("ClienteRMI");
         setPreferredSize(new Dimension(400, 300));
@@ -84,7 +86,7 @@ public class GUI extends JFrame {
         add(splitPane, BorderLayout.CENTER);
 
         // Panel izquierdo
-        JPanel panelIzquierdo = new JPanel();
+        panelIzquierdo = new JPanel();
         panelIzquierdo.setBackground(new Color(0xCEC78B));
         panelIzquierdo.setLayout(new BoxLayout(panelIzquierdo, BoxLayout.Y_AXIS));
         JScrollPane scrollPaneIzquierdo = new JScrollPane(panelIzquierdo);
@@ -92,7 +94,7 @@ public class GUI extends JFrame {
         splitPane.setTopComponent(scrollPaneIzquierdo);
 
         // Panel derecho
-        JPanel panelDerecho = new JPanel();
+        panelDerecho = new JPanel();
         panelDerecho.setBackground(new Color(0xCEC78B));
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
         JScrollPane scrollPaneDerecho = new JScrollPane(panelDerecho);
@@ -116,7 +118,7 @@ public class GUI extends JFrame {
 
                 try {
                     IComunication mir = (IComunication) java.rmi.Naming.lookup("//" + serverIP + ":" + serverPort + "//RMIServer");
-                    mir.sentMessage(textField.getText());
+                    mir.sentMessage(new messageInformation(nickName,serverIP,textField.getText()));
                 } catch (NotBoundException e) {
                     throw new RuntimeException(e);
                 } catch (MalformedURLException e) {
@@ -134,4 +136,11 @@ public class GUI extends JFrame {
         });
     }
 
+    @Override
+    public void receiveMessage(String message) throws RemoteException {
+        JLabel label = new JLabel(nickName + ": " + message);
+        panelDerecho.add(label);
+        revalidate();
+        repaint();
+    }
 }

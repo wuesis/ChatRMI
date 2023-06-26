@@ -1,25 +1,30 @@
 package RMIServer;
 
+import Models.messageInformation;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
-public class GUI extends JFrame {
 
-    private int serverPort=0;
-    private  String serverIp="";
+public class GUI extends JFrame implements Runnable {
+
+    private int serverPort = 0;
+    private String serverIp = "";
+
+    public static JPanel panelDerecho, panelIzquierdo;
+
     public GUI() {
         super("Servidor chat");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(500, 300);
         setVisible(true);
         setResizable(false);
+
+        Thread refresh = new Thread(this::run);
+        refresh.start();
 
         JLabel Configuracion = new JLabel("Confiuracion");
         JTextField serverPortField = new JTextField(20);
@@ -64,6 +69,11 @@ public class GUI extends JFrame {
         pack();
     }
 
+    public static void addLog(messageInformation messageInformation) {
+        JLabel label = new JLabel(messageInformation.userNickName + " - " + messageInformation.messageDate + ": " + messageInformation.message);
+        panelIzquierdo.add(label);
+    }
+
     public void setChatLayout() {
         this.getContentPane().removeAll();
         setSize(1000, 500);
@@ -74,41 +84,34 @@ public class GUI extends JFrame {
         add(splitPane, BorderLayout.CENTER);
 
         // Panel izquierdo
-        JPanel panelIzquierdo = new JPanel();
+        panelIzquierdo = new JPanel();
         panelIzquierdo.setBackground(new Color(0xCEC78B));
         panelIzquierdo.setLayout(new BoxLayout(panelIzquierdo, BoxLayout.Y_AXIS));
         JScrollPane scrollPaneIzquierdo = new JScrollPane(panelIzquierdo);
         scrollPaneIzquierdo.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         splitPane.setTopComponent(scrollPaneIzquierdo);
-        panelIzquierdo.add(new JLabel("La direccion del servidor es: "+ serverIp +":"+serverPort));
+        panelIzquierdo.add(new JLabel("La direccion del servidor es: " + serverIp + ":" + serverPort));
         // Panel derecho
-        JPanel panelDerecho = new JPanel();
+        panelDerecho = new JPanel();
         panelDerecho.setBackground(new Color(0xCEC78B));
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
         JScrollPane scrollPaneDerecho = new JScrollPane(panelDerecho);
         scrollPaneDerecho.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         splitPane.setBottomComponent(scrollPaneDerecho);
 
-        // Panel inferior
-        JPanel panelInferior = new JPanel();
-        panelInferior.setLayout(new BorderLayout());
-        panelInferior.setBackground(Color.GREEN);
-        add(panelInferior, BorderLayout.SOUTH);
 
-        // Textfield en el panel inferior
-        JTextField textField = new JTextField();
-        panelInferior.add(textField, BorderLayout.CENTER);
-
-
-        textField.addActionListener((actionEvent) -> {
-            if (textField.getText() != "") {
-                JLabel label = new JLabel(textField.getText());
-                panelDerecho.add(label);
-                textField.setText("");
-                revalidate();
-                repaint();
-            }
-        });
     }
 
+    @Override
+    public void run() {
+        while (true) {
+
+            try {
+                Thread.sleep(100);
+                revalidate();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
